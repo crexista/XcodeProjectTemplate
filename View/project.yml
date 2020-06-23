@@ -1,0 +1,40 @@
+name: View
+projectReferences:
+  UseCase:
+    path: ../UseCase/UseCase.xcodeproj
+targets:
+  View:
+    scheme:
+      testTargets:
+        - ViewTests
+    type: framework
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: View
+    platform: iOS
+    deploymentTarget: "13.0"
+    sources:
+      - path: "Sources/Xcassets.swift"
+        optional: true
+        type: file
+      - path: Sources
+      - path: Images.xcassets
+      - path: Colors.xcassets
+    info:
+      path: Sources/Info.plist
+    prebuildScripts:
+      - name: Run SwiftLint
+        script: |
+                if which ${PODS_ROOT}/SwiftLint/swiftlint >/dev/null; then
+                  ${PODS_ROOT}/SwiftLint/swiftlint lint --config ${PROJECT_DIR}/../.swiftlint.yml
+                else
+                  echo "warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint"
+                fi
+    dependencies:
+      - target: UseCase/UseCase
+  ViewTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [Tests]
+    info:
+      path: Tests/Info.plist

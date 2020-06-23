@@ -1,0 +1,76 @@
+# coding: utf-8
+require 'fileutils'
+
+DEBUG_XCCONFIG_PATH = './main/Configs/Debug.xcconfig'
+RELEASE_XCCONFIG_PATH = './main/Configs/Release.xcconfig'
+PODS_DEBUG_XCCONFIG_PATH = '../Pods/Target Support Files/Pods-app-main/Pods-app-main.debug.xcconfig'
+PODS_RELEASE_XCCONFIG_PATH = '../Pods/Target Support Files/Pods-app-main/Pods-app-main.release.xcconfig'
+TMP_KEYCHAIN_NAME = 'tmp_keychain'
+TMP_KEYCHAIN_PASS = 'tmp_keychain_pass'
+
+XCCONFIG = {}
+
+private_lane :configurate_setting do |params|
+
+  XCCONFIG = {
+    'ARCHS' => '$(ARCHS_STANDARD_64_BIT)',
+    'DEVELOPMENT_TEAM' => ENV['DEVELOPMENT_TEAM'],
+    'DISPLAY_NAME' => ENV['DISPLAY_NAME'],
+    'PRODUCT_NAME' => ENV['PRODUCT_NAME'],
+    'PRODUCT_BUNDLE_IDENTIFIER' => ENV['PRODUCT_BUNDLE_IDENTIFIER'],
+    'PROVISIONING_PROFILE_SPECIFIER' => ENV['PROVISIONING_PROFILE_SPECIFIER'],
+    'CODE_SIGN_IDENTITY' => ENV['CODE_SIGN_IDENTITY'],
+    'INFOPLIST_FILE' => 'Sources/Info.plist'
+  }
+
+  case params[:lane]
+  when :test then
+    xcconfig_setting = {
+      :config => XCCONFIG,
+      :path => DEBUG_XCCONFIG_PATH,
+    }
+
+  when :init_proj then
+    xcconfig_setting = {
+      :config => XCCONFIG,
+      :path => DEBUG_XCCONFIG_PATH,
+    }
+
+  when :setup_debug_device then
+    match_setting = {
+      :type => "development",
+      :keychain => {
+        :name => prompt(text: "Please input keychain name (need to add extension): "),
+        :pass => prompt(text: "Please input keychain password: ", secure_text: true)
+      }
+    }
+    xcconfig_setting = {
+      :config => XCCONFIG,
+      :path => DEBUG_XCCONFIG_PATH,
+    }
+
+
+  when :preview then
+    match_setting = {
+      :type => "enterprise",
+      :keychain => { :name => TMP_KEYCHAIN_NAME, :pass => TMP_KEYCHAIN_PASS }
+    }
+    xcconfig_setting = {
+      :config => XCCONFIG,
+      :path => DEBUG_XCCONFIG_PATH,
+    }
+
+  when :release then
+    match_setting = {
+      :type => "appstore",
+      :keychain => { :name => TMP_KEYCHAIN_NAME, :pass => TMP_KEYCHAIN_PASS }
+    }
+    xcconfig_setting = {
+      :config => XCCONFIG,
+      :path => RELEASE_XCCONFIG_PATH,
+    }
+  end
+
+  { :xcconfig => xcconfig_setting, :match => match_setting }
+
+end

@@ -1,0 +1,28 @@
+private_lane :prepare_keychain do |params|
+
+  case ENV["FASTLANE_LANE_NAME"]
+  when 'setup' then
+    keychain = params[:keychain] ||
+               prompt(text: "Please input keychain name (no need to add extension. e.g. login.keychain -> login): ")
+    pass = params[:pass] ||
+           prompt(text: "Please input keychain password: ", secure_text: true)
+
+    ENV['KEYCHAIN_NAME'] = keychain
+    ENV['KEYCHAIN_PASS'] = pass
+
+  when 'preview' then
+    p ENV["MATCH_TMP_KEYCHAIN_PASS"]
+    ENV['KEYCHAIN_NAME'] = ENV["MATCH_TMP_KEYCHAIN_NAME"]
+    ENV['KEYCHAIN_PASS'] = ENV["MATCH_TMP_KEYCHAIN_PASS"]
+    create_keychain(name: ENV["KEYCHAIN_NAME"],
+                    password: ENV["KEYCHAIN_PASS"],
+                    unlock: true)
+
+  when 'adhoc' then
+    ENV['KEYCHAIN_NAME'] = ENV["MATCH_TMP_KEYCHAIN_NAME"]
+    ENV['KEYCHAIN_PASS'] = ENV["MATCH_TMP_KEYCHAIN_PASS"]
+    create_keychain(name: ENV["KEYCHAIN_NAME"],
+                    password: ENV["KEYCHAIN_PASS"],
+                    unlock: true)
+  end
+end

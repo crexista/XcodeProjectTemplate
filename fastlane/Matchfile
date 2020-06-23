@@ -1,0 +1,4 @@
+git_url ENV["MATCH_REPO_URL"]
+storage_mode 'git'
+readonly false
+username ENV['FASTLANE_USER']

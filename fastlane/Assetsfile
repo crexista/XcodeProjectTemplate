@@ -1,0 +1,52 @@
+# coding: utf-8
+# XCodeにpdf形式の.imagesetファイルを生成します
+# やっていることとしては{画像名}.imagesetというディレクトリの中に
+# 指定の形式のJSONファイルと画像ファイルを設置しているだけです
+def make_pdf_imageset(output_dir:, dir:, image_name:)
+  FileUtils.mkdir_p("#{dir}/#{image_name}.imageset")
+  FileUtils.cp("#{output_dir}/#{image_name}.pdf", "#{dir}/#{image_name}.imageset/#{image_name}.pdf")
+  open("#{dir}/#{image_name}.imageset/Contents.json", "w") do |io|
+    content_json = content_json_hash()
+    content_json[:images] = [
+      image_json_hash(image_name: image_name, appearance: "dark"),
+      image_json_hash(image_name: image_name, appearance: "light"),
+      image_json_hash(image_name: image_name, appearance: nil)
+    ]
+    JSON.dump(content_json, io)
+  end
+end
+
+def rewrite_asset_dir(dir:)
+  `rm -rf #{dir}`
+  Dir.mkdir(dir)
+  open("#{dir}/Contents.json", "w") do |io|
+    JSON.dump(content_json_hash(), io)
+  end
+end
+
+def appearance_json_hash(mode:)
+  return {
+    :appearance  => "luminosity",
+    :value => mode
+  }
+end
+
+def image_json_hash(image_name:, appearance:)
+  json = {
+    :idiom => "universal",
+    :filename => "#{image_name}.pdf"
+  }
+  if appearance != nil
+    json[:appearances] = [appearance_json_hash(mode: appearance)]
+  end
+  return json
+end
+
+def content_json_hash()
+  return {
+    :info => {
+      :version => 1,
+      :author => "xcode"
+    }
+  }
+end

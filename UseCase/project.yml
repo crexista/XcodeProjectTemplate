@@ -1,0 +1,27 @@
+name: UseCase
+projectReferences:
+  DataSource:
+    path: ../DataSource/DataSource.xcodeproj
+
+targets:
+  UseCase:
+    scheme:
+      testTargets:
+        - UseCaseTests
+    type: framework
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: UseCase
+    platform: iOS
+    deploymentTarget: "13.0"
+    sources: [Sources]
+    info:
+      path: Sources/Info.plist
+    dependencies:
+      - target: DataSource/DataSource
+  UseCaseTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [Tests]
+    info:
+      path: Tests/Info.plist

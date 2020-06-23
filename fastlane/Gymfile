@@ -1,0 +1,26 @@
+# coding: utf-8
+workspace 'main.xcworkspace'
+scheme 'main'
+include_symbols true
+include_bitcode true
+clean true
+output_directory 'archive'
+output_name 'main.ipa'
+sdk 'iphoneos'
+
+for_lane :adhoc do
+  configuration 'Debug'
+  export_method 'enterprise'
+end
+
+for_lane :preview do
+  configuration 'Debug'
+  export_method 'enterprise'
+
+end
+
+for_lane :release do
+  configuration 'Release'
+  # TODO: change app-store
+  export_method 'enterprise'
+end

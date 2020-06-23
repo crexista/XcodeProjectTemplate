@@ -1,0 +1,93 @@
+# coding: utf-8
+
+default_platform(:ios)
+
+platform :ios do
+
+  import 'Settingfile'
+  import 'Assetsfile'
+
+  before_all do |lane, options|
+    next if lane == :reload_proj || lane == :code_gen
+    FileUtils.rm_rf(".#{DEBUG_XCCONFIG_PATH}")
+    FileUtils.rm_rf(".#{RELEASE_XCCONFIG_PATH}")
+    open(".#{DEBUG_XCCONFIG_PATH}", "a") { |f| f.print "#include \"#{PODS_DEBUG_XCCONFIG_PATH}\"" }
+    open(".#{RELEASE_XCCONFIG_PATH}", "a") { |f| f.print "#include \"#{PODS_RELEASE_XCCONFIG_PATH}\"" }
+
+
+    setting = configurate_setting(lane: lane)
+    config = setting[:xcconfig][:config]
+    match_setting = setting[:match]
+
+    config
+      .each { |k, v| set_xcconfig_value(path: setting[:xcconfig][:path], name: k, value: v) }
+
+    ## project setup
+
+    reload_proj
+    cocoapods(repo_update: false)
+    code_gen
+
+    ## Match setup if required
+
+    create_keychain(name: match_setting[:keychain][:name],
+                    password: match_setting[:keychain][:pass],
+                    unlock: true,
+                    timeout: 3600) unless match_setting.nil?
+
+    match(type: match_setting[:type],
+          git_branch: 'master',
+          team_id: config['DEVELOPMENT_TEAM'],
+          app_identifier: config['PRODUCT_BUNDLE_IDENTIFIER'],
+          keychain_name: match_setting[:keychain][:name],
+          keychain_password: match_setting[:keychain][:pass]) unless match_setting.nil?
+  end
+
+  lane :test do
+    scan(scheme: "main")
+  end
+
+  lane :reload_proj do
+    xcodegen(spec: "DataSource/project.yml")
+    xcodegen(spec: "UseCase/project.yml")
+    xcodegen(spec: "View/project.yml")
+    xcodegen(spec: "main/project.yml")
+  end
+
+  lane :code_gen do
+    assetsDir = "../View/Images.xcassets"
+    Dir.glob("#{assetsDir}/*.imageset") { |filename| FileUtils.rm_rf(filename) }
+    Dir.glob("#{assetsDir}/*.pdf") { |filename|
+      make_pdf_imageset(output_dir: assetsDir,
+                        dir: assetsDir,
+                        image_name: filename.gsub("#{assetsDir}/", "")
+                          .gsub('.pdf', ''))
+    }
+    sh('../Pods/SwiftGen/bin/swiftgen config run --config ../swiftgen.yml')
+  end
+
+  lane :init_proj do
+    FileUtils.mkdir_p("../main.xcworkspace/xcshareddata")
+    FileUtils.copy("IDETemplateMacros.plist", "../main.xcworkspace/xcshareddata/IDETemplateMacros.plist")
+  end
+
+  desc 'Archive binary with release build configuration for quality check and deploy ipa to DeployGate'
+  lane :preview do |params|
+    unlock_keychain(path: TMP_KEYCHAIN_NAME, password: TMP_KEYCHAIN_PASS)
+    gym
+  end
+
+  after_all do |lane|
+    XCCONFIG.each { |k, v| set_xcconfig_value(path: DEBUG_XCCONFIG_PATH, name: k, value: v) }
+    if lane == :preview || lane == :adhoc
+      delete_keychain(name: TMP_KEYCHAIN_NAME)
+    end
+  end
+
+  error do |lane, exception|
+    if lane == :preview || lane == :adhoc
+      delete_keychain(name: TMP_KEYCHAIN_NAME)
+    end
+  end
+
+end

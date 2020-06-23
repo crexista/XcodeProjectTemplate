@@ -1,0 +1,9 @@
+lane :test do
+
+  scan(
+  	workspace: "main.xcworkspace",
+    scheme: "main",
+	clean: true
+  )
+
+end
