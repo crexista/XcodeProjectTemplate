@@ -16,8 +16,6 @@ echo:
 environment:
 	rbenv install -s
 	rbenv rehash
-	nodenv install -s
-	nodenv rehash
 
 install:
 	$(BUNDLE) install
