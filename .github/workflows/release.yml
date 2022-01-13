@@ -16,8 +16,6 @@ on:
 jobs:
   prepare_release:
     runs-on: macos-11
-    env:
-
     steps:
       - name: Make branch
         run: |
@@ -32,7 +30,7 @@ jobs:
 
       - name: Create pull request
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.API_TOKEN }}
         run: |
           hub push
           hub pull-request -b main -m "Release ${{ steps.extract_version.outputs.version }}"
