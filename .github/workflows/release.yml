@@ -1,0 +1,40 @@
+name: prepare_release
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Input release version without prefix "v"'
+        required: true
+      release_branch:
+        description: 'Input release branch name'
+        required: false
+        default: 'release'
+      base_branch:
+        description: 'Input default base branch name'
+        required: false
+        default: 'develop'
+jobs:
+  prepare_release:
+    runs-on: macos-11
+    env:
+
+    steps:
+      - name: Make branch
+        run: |
+          git config --local user.name "GitHub Action"
+          git config --local user.email "github_action@users.noreply.github.com"
+          git checkout -b release
+
+      - name: Project Version Up
+        run: |
+          make version NUMBER=${{ github.event.inputs.version }}
+          git commit -a -m "Bump up app version to ${{ github.event.inputs.version }}"
+
+      - name: Create pull request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          hub push
+          hub pull-request -b main -m "Release ${{ steps.extract_version.outputs.version }}"
+          hub pull-request -b develop -m "Release ${{ steps.extract_version.outputs.version }}"
+

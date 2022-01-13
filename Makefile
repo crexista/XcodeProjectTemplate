@@ -21,9 +21,6 @@ environment:
 
 install:
 	$(BUNDLE) install
-	$(NPM) install --prefix UseCase/GraphQL
-	$(NPM) run setup --prefix UseCase/GraphQL
-	$(NPM) run dist --prefix UseCase/GraphQL
 
 init:
 	make environment
@@ -36,11 +33,16 @@ reload:
 	$(BUNDLE) exec fastlane run projectgen
 
 resource:
-	ruby fastlane/assetgen View/Images.xcassets
-	./Pods/SwiftGen/bin/swiftgen config run --config ./swiftgen.yml
+	echo "implements later"
 
 code:
-	$(NPM) run dist --prefix UseCase/GraphQL
+	echo "implements later"
+
+
+version:
+	make environment
+	make install
+	$(BUNDLE) exec fastlane verup version:$(NUMBER)
 
 publish:
 ifeq ($(PRESET),preview)
@@ -64,6 +66,6 @@ clean:
 
 
 format:
-	cd CodingSupport;SDKROOT=(xcrun --sdk macosx --show-sdk-path);\
+	cd Packages/App;SDKROOT=(xcrun --sdk macosx --show-sdk-path);\
 	swift run -c release swiftlint  --fix --format
 
