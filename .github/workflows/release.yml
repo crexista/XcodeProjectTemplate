@@ -17,6 +17,9 @@ jobs:
   prepare_release:
     runs-on: macos-11
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Make branch
         run: |
           git config --local user.name "GitHub Action"
