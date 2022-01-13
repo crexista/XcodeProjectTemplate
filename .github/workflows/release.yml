@@ -37,5 +37,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.API_TOKEN }}
         run: |
           hub push
-          hub pull-request -b ${{ github.event.inputs.base_branch }} -m "Release ${{ steps.extract_version.outputs.version }}"
+          hub pull-request -b ${{ github.event.inputs.base_branch }} -m "Back port v${{ github.event.inputs.version }} to ${{ github.event.inputs.base_branch }}"
 
