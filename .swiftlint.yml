@@ -1,18 +1,18 @@
 included:
-  - View/Sources
-  - View/Tests
-  - UseCase/Sources
-  - UseCase/Tests
-  - DataSource/Sources
-  - DataSource/Tests
-  - Architecture/Sources
-  - Sources
+  - Packages/App/Sources
+  - Packages/App/Tests
+  - Packages/View/Sources
+  - Packages/View/Tests
+  - Packages/UseCase/Sources
+  - Packages/UseCase/Tests
+  - Packages/Infrastructure/Sources
+  - Packages/Infrastructure/Tests
+  - main
   - Tests
 excluded:
   - Pods
 analyzer_rules:
   - unused_import
-  - unused_private_declaration
 opt_in_rules:
   - anyobject_protocol
   - attributes

@@ -1,0 +1,4 @@
+xcconfig "./main/Configs/debug/main.xcconfig"
+provisioning_type 'development'
+keychain_name UI.input("Please input keychain name (need to add extension, and default is login.keychain): ")
+keychain_pass UI.password("Please input keychain password:")

@@ -1,4 +1,6 @@
-git_url ENV["MATCH_REPO_URL"]
 storage_mode 'git'
-readonly false
+git_url 'git@github.com:nml-nakameguro/fastlane-certificates-ios.git'
+git_branch 'master'
+
+readonly true
 username ENV['FASTLANE_USER']

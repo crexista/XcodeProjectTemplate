@@ -1,0 +1,52 @@
+name: main
+attributes:
+  ORGANIZATIONNAME: st.crexi
+
+
+packages:
+  App:
+    path: ./Packages/App
+  View:
+    path: ./Packages/View
+  UseCase:
+    path: ./Packages/UseCase
+  Infrastructure:
+    path: ./Packages/Infrastructure
+configs:
+  Debug: debug
+  Release: release
+targets:
+  main:
+    type: application
+    platform: iOS
+    deploymentTarget: "14.0"
+    configs:
+      Debug: debug
+      Release: release
+    sources:
+      - path: main
+    configFiles:
+      Debug: main/Xcconfigs/debug/main.xcconfig
+      Release: main/Xcconfigs/release/main.xcconfig
+    prebuildScripts:
+      - name: Run SwiftLint
+        script: |
+                cd ./Packages/App
+                SDKROOT=(xcrun --sdk macosx --show-sdk-path)
+
+                swift run -c release swiftlint lint --config ../../.swiftlint.yml
+    dependencies:
+      - package: App
+
+schemes:
+  main:
+    build:
+      targets:
+        main: all
+    test:
+      gatherCoverageData: true
+      packages:
+        - App/AppTests
+        - View/ViewTests
+        - UseCase/UseCaseTests
+        - Infrastructure/InfrastructureTests

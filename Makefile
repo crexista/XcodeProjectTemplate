@@ -1,24 +1,69 @@
+SKIP_CERT=false
+ACTIONS=false
+
+ifeq ($(ACTIONS),false)
+    BUNDLE := rbenv exec bundle
+    NPM := nodenv exec npm
+else
+    BUNDLE := bundle
+    NPM := npm
+endif
+
+echo:
+	$(BUNDLE) --version
+	$(NPM) --version
+
 environment:
 	rbenv install -s
 	rbenv rehash
-	rbenv exec bundle install
+	nodenv install -s
+	nodenv rehash
+
+install:
+	$(BUNDLE) install
+	$(NPM) install --prefix UseCase/GraphQL
+	$(NPM) run setup --prefix UseCase/GraphQL
+	$(NPM) run dist --prefix UseCase/GraphQL
 
 init:
 	make environment
-	rbenv exec bundle exec fastlane init_proj --env local
+	make install
+	$(BUNDLE) exec fastlane local
+
+reload:
+	make resource
+	make code
+	$(BUNDLE) exec fastlane run projectgen
+
+resource:
+	ruby fastlane/assetgen View/Images.xcassets
+	./Pods/SwiftGen/bin/swiftgen config run --config ./swiftgen.yml
+
+code:
+	$(NPM) run dist --prefix UseCase/GraphQL
 
 publish:
-	make environment
-	rbenv exec bundle exec fastlane preview
+ifeq ($(PRESET),preview)
+	make config
+	$(BUNDLE) exec fastlane preview build:$(NUMBER)
+else
+	make config ENV=dev
+	$(BUNDLE) exec fastlane adhoc build:$(NUMBER)
+endif
 
 test:
-	make environment
-	rbenv exec bundle exec fastlane test
+	$(BUNDLE) exec fastlane test
 
 clean:
 	rm -rf vendor
-	rm -rf View/View.xcodeproj
-	rm -rf UseCase/UseCase.xcodeproj
-	rm -rf DataSource/DataSource.xcodeproj
 	rm -rf main/main.xcodeproj
-	rm -rf main.xcworkspace
+	rm -rf Packages/App/.build
+	rm -rf Packages/View/.build
+	rm -rf Packages/UseCase/.build
+	rm -rf Packages/Infrastructure/.build
+
+
+format:
+	cd CodingSupport;SDKROOT=(xcrun --sdk macosx --show-sdk-path);\
+	swift run -c release swiftlint  --fix --format
+

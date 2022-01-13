@@ -1,8 +1,8 @@
 source "https://rubygems.org"
 
 # Xcode
-gem 'cocoapods', '1.9.3'
-gem 'fastlane', '2.149.0'
+gem 'cocoapods', '1.10.1'
+gem 'fastlane', '2.189.0'
 
 # Danger
 gem 'danger'

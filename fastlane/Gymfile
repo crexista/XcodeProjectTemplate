@@ -9,18 +9,21 @@ output_name 'main.ipa'
 sdk 'iphoneos'
 
 for_lane :adhoc do
-  configuration 'Debug'
+  configuration 'AdHoc'
   export_method 'enterprise'
 end
 
 for_lane :preview do
-  configuration 'Debug'
+  configuration 'Preview'
   export_method 'enterprise'
-
 end
 
 for_lane :release do
   configuration 'Release'
   # TODO: change app-store
   export_method 'enterprise'
+end
+
+for_lane :matchtest do
+  configuration 'Debug'
 end

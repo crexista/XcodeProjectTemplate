@@ -1,0 +1,4 @@
+xcodegen_conf "project.yml"
+swiftgen_conf "swiftgen.yml"
+image_xcassets "./Packages/View/Sources/Images.xcassets"
+

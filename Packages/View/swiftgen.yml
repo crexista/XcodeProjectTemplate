@@ -1,0 +1,8 @@
+input_dir: ./Sources/
+output_dir: ./Sources/
+xcassets:
+  inputs:
+    - Images.xcassets
+  outputs:
+    - templateName: swift5
+      output: Xcassets.swift

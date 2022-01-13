@@ -7,8 +7,9 @@
 ## Build generated
 DerivedData/
 *.xcodeproj/
-*.xcworkspace/
-*.xcconfig
+*.provisioning_profile.xcconfig
+View/Sources/Xcassets.swift
+View/Images.xcassets/*.imageset
 
 ## Various settings
 *.pbxuser

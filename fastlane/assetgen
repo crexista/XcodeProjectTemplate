@@ -1,0 +1,6 @@
+# coding: utf-8
+require_relative './asset_gen.rb'
+
+ARGV.each_with_index do |arg, i|
+  make_asset_code(arg)
+end
