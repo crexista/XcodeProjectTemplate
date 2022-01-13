@@ -1,0 +1,21 @@
+name: tag_release
+on:
+  release:
+    types: [released]
+
+jobs:
+  prepare_release:
+    runs-on: macos-11
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up git
+        run: |
+          git config --local user.name "GitHub Action"
+          git config --local user.email "github_action@users.noreply.github.com"
+
+      - name: Overwrite market branch
+        run: |
+          git push origin ${{ github.event.release.tag_name }}:market --force
+
