@@ -28,7 +28,7 @@ jobs:
 
       - name: Project Version Up
         run: |
-          make version NUMBER=${{ github.event.inputs.version }}
+          make version NUMBER=${{ github.event.inputs.version }} ACTIONS=true
           git commit -a -m "Bump up app version to ${{ github.event.inputs.version }}"
 
       - name: Create pull request

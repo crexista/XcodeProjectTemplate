@@ -38,7 +38,6 @@ code:
 
 
 version:
-	make environment
 	make install
 	$(BUNDLE) exec fastlane verup version:$(NUMBER)
 
